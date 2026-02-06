@@ -198,26 +198,32 @@ def main() -> int:
                     audio = block.T
 
                 audio_t = torch.from_numpy(audio).unsqueeze(0).to(device)
+                
                 with torch.no_grad():
                     out = model(audio_t, vec)
+                    
 
                 out_np = out.detach().cpu().numpy()
                 if out_np.ndim == 4:
-                    # (B, 2, 2, T) -> choose source and keep stereo
-                    src = out_np[0, args.source_index]  # (2, T)
-                    out_block = src[:, -blocksize:].T
+                    # (B, 2, 2, T) -> two sources, each has stereo (2, T)
+                    src1 = out_np[0, 0]  # (2, T)
+                    src2 = out_np[0, 1]  # (2, T)
+                    mono1 = src1[:, -blocksize:].mean(axis=0)
+                    mono2 = src2[:, -blocksize:].mean(axis=0)
                 else:
-                    # (B, 2, T) -> choose source, mono
-                    src = out_np[0, args.source_index]  # (T,)
-                    mono = src[-blocksize:]
-                    if args.output_mode == "stereo":
-                        out_block = np.column_stack([mono, mono])
-                    else:
-                        out_block = np.column_stack([mono, mono])
+                    # (B, 2, T) -> two sources, mono
+                    mono1 = out_np[0, 0][-blocksize:]  # (T,)
+                    mono2 = out_np[0, 1][-blocksize:]  # (T,)
+
+                if args.output_mode == "stereo":
+                    out_block = np.column_stack([mono1, mono2])
+                else:
+                    mono = mono1 if args.source_index == 0 else mono2
+                    out_block = np.column_stack([mono, mono])
 
                 out_block = out_block.astype(np.float32, copy=False)
-                channel0_audio.append(out_block[:, 0].copy())
-                channel1_audio.append(out_block[:, 1].copy())
+                channel0_audio.append(mono1.copy())
+                channel1_audio.append(mono2.copy())
                 out_stream.write(out_block)
         except KeyboardInterrupt:
             stopped = True
