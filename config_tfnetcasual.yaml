@@ -1,0 +1,49 @@
+max_length: 3
+accu_grad: 0
+clip_grad_norm: 5
+network_audio:
+  backbone: tfnet_causal
+  streaming_train: false
+  streaming_emit_len: 1024      # 例如 40ms@16k
+  streaming_left_len: 3200 
+  stft_frame: 1024
+  stft_hop: 512
+  n_fft: 1024
+  causal_window_eps: 1e-4
+  ngf: 64
+  input_nc: 2
+  output_nc: 4
+  cond_dim: 128
+  activation: "Tanh"
+  bottleneck_blocks: 4
+  bottleneck_residual: true
+  bottleneck_attention: true
+  attention_reduction: 8
+  attention_kernel: 7
+
+
+mic_channels: 2
+vector_cue: 1
+sstask: 1
+input_mono: 0
+stereo_loss: 0
+
+
+# optimizer
+loss_type: pit_sisnr      # "snr", "sisdr", "hybrid"
+init_learning_rate: 0.001
+max_epoch: 400 
+
+
+#dataset
+dataset:
+  path: /home/qysun/Neuro-SS/baseline/multi-channel/sound-bubble/dataset/
+  name: mix_sources_updated.csv
+  type: online  # 'online' to load from CSV, 'pickle' to load from pkl files
+
+dataloader:
+  batch_size: 8
+  num_workers: 8
+
+
+checkpoint_dir: ./checkpoints/
