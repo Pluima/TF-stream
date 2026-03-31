@@ -535,7 +535,7 @@ def parse_args() -> argparse.Namespace:
         help="Separator backend. `learned` uses your trained checkpoint; `fastmnmf2` uses pyroomacoustics blind separation.",
     )
     parser.add_argument("--checkpoint", default=DEFAULT_CKPT, help="Checkpoint path for `learned` backend.")
-    parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu", help="Inference device for `learned` backend.")
+    parser.add_argument("--device", default="mps" if torch.cuda.is_available() else "cpu", help="Inference device for `learned` backend.")
     parser.add_argument("--sample-rate", type=int, default=16000)
     parser.add_argument(
         "--block-size",
