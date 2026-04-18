@@ -6,3 +6,4 @@
 4. python stereo_capture.py --list-devices
 5. python run_streaming.py --input-device X --output-device Y
    (Replace X and Y for the devices listed above)
+6. modify --enable-input-channel-compensation for possible mismatch in microphones
