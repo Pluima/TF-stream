@@ -1,9 +1,12 @@
 # How to use
 
-1. modify the SYSTEM_LIBSTDCXX path if necessary
-2. install the requirements
-3. modify cuda if not MACOS (line 538 in run_streaming.py)
-4. python stereo_capture.py --list-devices
-5. python run_streaming.py --input-device X --output-device Y
-   (Replace X and Y for the devices listed above)
-6. modify --enable-input-channel-compensation for possible mismatch in microphones
+1. install the requirements
+2. list input/output device IDs:
+   ```bash
+   python detect_devices.py
+   ```
+3. run the default streaming separator:
+   ```bash
+   python run_streaming.py --input-device X --output-device Y --device cuda:N (add this if not macOS)
+   ```
+   Replace `X` and `Y` with the input/output IDs printed by `detect_devices.py`.
